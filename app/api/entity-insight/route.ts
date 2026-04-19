@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOpenRouterApiKey, openRouterAppHeaders } from "@/lib/openrouter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,7 +8,7 @@ const MODEL = "google/gemini-2.5-flash-lite";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = getOpenRouterApiKey();
   if (!apiKey) {
     return NextResponse.json(
       { error: "OPENROUTER_API_KEY не задан в .env" },
@@ -36,8 +37,7 @@ export async function POST(req: NextRequest) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "TEST UX entity insight",
+        ...openRouterAppHeaders("TEST UX entity insight"),
       },
       body: JSON.stringify({
         model: MODEL,

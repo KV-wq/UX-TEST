@@ -15,6 +15,7 @@ import {
   applyCreatedAtFallbackForToday,
   parseLocalNoonFromISODate,
 } from "@/lib/chat-date-fallback";
+import { getOpenRouterApiKey, openRouterAppHeaders } from "@/lib/openrouter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -380,7 +381,7 @@ function parseToolCallToAction(tc: OpenAIToolCall): AgentAction | null {
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = getOpenRouterApiKey();
   if (!apiKey) {
     return NextResponse.json(
       { error: "OPENROUTER_API_KEY не задан в .env" },
@@ -417,8 +418,7 @@ export async function POST(req: NextRequest) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "AmoAI UX Demo",
+        ...openRouterAppHeaders("AmoAI UX Demo"),
       },
       body: JSON.stringify({
         model: MODEL,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { startOfDay } from "@/lib/format";
+import { getOpenRouterApiKey, openRouterAppHeaders } from "@/lib/openrouter";
 import type { ClientStage, DealStage } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -48,7 +49,7 @@ function createdAtDealSlot(index: number, total: number, now: number): number {
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = getOpenRouterApiKey();
   if (!apiKey) {
     return NextResponse.json(
       { error: "OPENROUTER_API_KEY не задан в .env" },
@@ -95,8 +96,7 @@ clientName в сделках совпадает с name или company из кл
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "TEST UX Seed",
+        ...openRouterAppHeaders("TEST UX Seed"),
       },
       body: JSON.stringify({
         model: MODEL,
