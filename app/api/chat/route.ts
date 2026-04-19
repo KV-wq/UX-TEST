@@ -15,16 +15,7 @@ import {
   applyCreatedAtFallbackForToday,
   parseLocalNoonFromISODate,
 } from "@/lib/chat-date-fallback";
-import {
-  getOpenRouterApiKey,
-  logOpenRouterChatException,
-  logOpenRouterChatStart,
-  logOpenRouterChatUpstreamError,
-  openRouterAppHeaders,
-  openRouterEnvLogFields,
-  openRouterKeyLogFields,
-  openRouterRuntimeLogFields,
-} from "@/lib/openrouter";
+import { getOpenRouterApiKey, openRouterAppHeaders } from "@/lib/openrouter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -422,7 +413,6 @@ export async function POST(req: NextRequest) {
     body.state.location === "dashboard" ? 0.45 : 0.55;
 
   try {
-    logOpenRouterChatStart(apiKey);
     const res = await fetch(OPENROUTER_URL, {
       method: "POST",
       headers: {
@@ -441,7 +431,6 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const text = await res.text();
-      logOpenRouterChatUpstreamError(apiKey, res, text);
       return NextResponse.json(
         { error: `OpenRouter ${res.status}: ${text.slice(0, 400)}` },
         { status: 502 }
@@ -450,15 +439,6 @@ export async function POST(req: NextRequest) {
 
     const data = (await res.json()) as OpenAIResponse;
     if (data.error) {
-      console.error(
-        "[api/chat] openrouter body error",
-        JSON.stringify({
-          dataError: data.error,
-          ...openRouterEnvLogFields(),
-          ...openRouterKeyLogFields(apiKey),
-          ...openRouterRuntimeLogFields(),
-        })
-      );
       return NextResponse.json(
         { error: data.error.message ?? "OpenRouter error" },
         { status: 502 }
@@ -492,7 +472,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message, actions });
   } catch (e) {
-    logOpenRouterChatException(apiKey, e);
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
