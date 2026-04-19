@@ -33,7 +33,7 @@ interface Props {
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 const CHAT_GREET_AFTER_CLEAR: Record<Props["location"], string> = {
-  home: "Привет! Чем помочь?",
+  home: "Привет! Чем могу помочь?",
   dashboard: "История очищена. Чем могу помочь?",
 };
 
