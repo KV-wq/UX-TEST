@@ -2,15 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 const title = "TEST UX - демо AI-CRM";
-const description =
-  "Демо AI CRM: чат-ассистент сам регистрирует и достраивает интерфейс в реальном времени.";
 
 export const metadata: Metadata = {
   title,
-  description,
   openGraph: {
     title,
-    description,
     url: "/",
     siteName: "TEST UX",
     locale: "ru_RU",
@@ -27,7 +23,6 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title,
-    description,
     images: ["/og.png"],
   },
 };
